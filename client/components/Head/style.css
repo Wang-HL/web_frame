@@ -1,0 +1,30 @@
+.header {
+  display: flex;
+  align-items: center;
+  flex-flow: row nowrap;
+}
+.trigger {
+  font-size: 18px;
+  line-height: 64px;
+  padding: 0 24px;
+  cursor: pointer;
+  transition: color .3s;
+}
+.placeholder {
+  flex: 1;
+}
+.logout {
+  font-size: 18px;
+  line-height: 64px;
+  padding: 0 24px;
+  cursor: pointer;
+  transition: color .3s;
+}
+
+.trigger:hover {
+  color: #1890ff;
+}
+.label{
+  font-size: 14px;
+  color: #333;
+}
