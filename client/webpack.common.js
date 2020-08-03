@@ -35,15 +35,20 @@ module.exports = {
   entry: {
     index: path.join(__dirname, 'index.jsx'),
   },
-  plugins:[
-    new HtmlWebpackPlugin({title:"duola", template: path.join(__dirname, 'public/index.html'),meta: {
-      // viewport: 'width=device-width, initial-scale=1',
-    },
-    hash: true})
+  plugins: [
+    new HtmlWebpackPlugin({
+      title: "duola",
+      template: path.join(__dirname, 'public/index.html'),
+      meta: {
+        // viewport: 'width=device-width, initial-scale=1',
+      },
+      hash: true,
+      favicon: './favicon.ico' //favicon.ico文件路径
+    })
   ],
   resolve: {
     modules: ['node_modules', 'components', path.resolve(__dirname, 'src/utils')],
-    extensions: ['.js', '.jsx', '.css'],
+    extensions: ['.js', '.jsx', ".ts", ".tsx", '.css'],
   },
   output: {
     filename: 'js/[name].bundle.js',
@@ -56,6 +61,9 @@ module.exports = {
       test: /\.(js|jsx)$/,
       use: [babelLoader],
     }, {
+      test: /\.(ts|tsx)?$/,
+      use: "ts-loader"
+    }, {
       test: /\.css$/,
       include: /node_modules/,
       use: [styleLoader, 'css-loader'],
@@ -63,6 +71,9 @@ module.exports = {
       test: /\.css$/,
       exclude: /node_modules/,
       use: [styleLoader, cssLoader],
+    }, {
+      test: /\.less$/,
+      use: [styleLoader, cssLoader, 'less-loader'],
     }, {
       test: /\.(png|jpg|gif|svg|webp|webm|jpeg|bmp|eot|otf|ttf|woff|woff2|mp4|wav|mp3|m4a|aac|oga)$/,
       use: 'file-loader',

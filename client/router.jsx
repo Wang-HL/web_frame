@@ -13,6 +13,7 @@ export default () => (
   <BrowserRouter>
     <Switch>
       <Route path='/sys/login' component={loadLogin} />
+      <Route path='/' component={loadHome} />
       <Route path='/sys' component={loadHome} />
     </Switch>
   </BrowserRouter>

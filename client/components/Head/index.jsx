@@ -1,22 +1,20 @@
-import React, {
-  Component
-} from 'react';
+import React, { Component } from 'react';
+import { Layout, Tooltip, message, Modal } from 'antd';
 import {
-  Layout,
-  Icon,
-  Tooltip,
-  message,
-} from 'antd';
+  PoweroffOutlined,
+  MenuFoldOutlined,
+  MenuUnfoldOutlined,
+  ExclamationCircleOutlined
+} from '@ant-design/icons';
 import PropTypes from 'prop-types';
+import { withRouter } from 'react-router-dom';
 
 import style from './style.css';
 
 import { Fetch } from 'fetchModules';
 
-const {
-  Header
-} = Layout;
-
+const { confirm } = Modal;
+const { Header } = Layout;
 
 class Head extends Component {
   static propTypes = {
@@ -26,64 +24,68 @@ class Head extends Component {
   constructor(props) {
     super(props);
 
-    this.state = {};
+    this.state = {
+      name: '',
+    };
 
     this.logout = this.logout.bind(this);
-    // this.getUserInfo = this.getUserInfo.bind(this);
+    this.getUserInfo = this.getUserInfo.bind(this);
     
   }
   
-  // componentDidMount() {
-  //   this.getUserInfo();
-  // }
-
-  async getUserInfo() {
-    try {
-      const res = await Fetch('/api/getUserInfo');
-      const resJSON = await res.json();
-      const { status, message: msg, result } = resJSON;
-      
-      if(!status) {
-        message.error(msg);
-        return false;
-      }
-      this.setState({name: result.name})
-
-    } catch (err) {
-      console.log(err);
-      message.error('获取身份提示出错！');
-    }
-
+  componentDidMount() {
+    this.getUserInfo();
   }
-  async logout() {
-    try {
-      const res = await Fetch('/sys/logout', 'DELETE');
 
-      const resJSON = await res.json();
-
-      if (resJSON.status) {
-        message.success('logout success');
-        window.localStorage.removeItem('token');
-        window.location.href = '/sys/login';
-      } else {
-        message.error('logout error, try again');
-      }
-    } catch(err) {
-      console.error(err);
-    }
+  getUserInfo() {
+    const user = window.localStorage.getItem('user') ? JSON.parse(window.localStorage.getItem('user')) : {};
+    this.setState({ name: user.name }) 
+  }
+  logout() {
+    const that = this
+    confirm({
+      title: '是否确定登出系统 ?',
+      icon: <ExclamationCircleOutlined />,
+      okText: '登出',
+      cancelText: '取消',
+      async onOk() {
+        try {
+          const res = await Fetch('/api/backend/logout');
+          const { error } = res;
+          if (error) {
+            window.localStorage.removeItem('token');
+            window.localStorage.removeItem('user');
+            that.props.history.push({
+              pathname: '/sys/login',
+              state: {
+               msg: '登出成功！',
+               type: 'success'
+              }
+            })
+          }
+        } catch(err) {
+          message.error(err.message);
+        }
+      },
+      onCancel() {},
+    });
   }
 
   render() {
     return (
       <Header style={this.props.style} className={style.header}>
-        <Icon className={style.trigger} type={this.props.collapsed ? 'menu-unfold' : 'menu-fold'} onClick={this.props.toggle} />
+        <span onClick={this.props.toggle}>
+          {
+            this.props.collapsed ? <MenuUnfoldOutlined className={style.trigger} /> : <MenuFoldOutlined className={style.trigger} />
+          }
+        </span>
         <div className={style.placeholder}></div>
         <label className={style.label}>Hi, {this.state.name}</label>
-        <Tooltip placement='bottom' title='logout'><Icon className={style.logout} type='poweroff' onClick={this.logout} /></Tooltip>
+        <Tooltip placement='bottom' title='登出账号' style={{ display: 'flex', alignItems: 'center' }}><PoweroffOutlined className={style.logout} onClick={this.logout} /></Tooltip>
       </Header>
     );
   }
 }
 
 
-export default Head;
+export default withRouter(Head);

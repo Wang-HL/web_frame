@@ -3,9 +3,11 @@ const mongoose = require('mongoose');
 
 const userModal = new mongoose.Schema({
     nickname: String,
-    email: String,
+    username: String,
     password: String,
     token: String,
+    createTime: String,
+    updateTime: String
 }, {
     versionKey: false,
 });
